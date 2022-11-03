@@ -4,7 +4,7 @@ import PathfindingVisualizer from './PathfindingVisualizer'
 
 function App() {
   return (
-    <div className="App">
+    <div className="App font-inconsolata">
       <PathfindingVisualizer></PathfindingVisualizer>
     </div>
   );

@@ -10,12 +10,16 @@ export default class Node extends Component { // functional class?
             isStart,
             isEnd,
             isWall,
+            onMouseDown,
         } = this.props;
 
         return (
             <td
                 id={`node-${row}-${col}`}
-                className={`node ${isStart ? 'node-start' : isEnd ? 'node-end' : isWall ? 'node-wall' : ''}`} >
+                className={`${isStart ? 'node-start bg-yellow-200' : isEnd ? 'node-end bg-green-200' : isWall ? 'node-wall bg-slate-300' : ''} w-5 h-5 border border-black`}
+                onMouseDown={() => onMouseDown(row, col)}
+            >
+
             </td>
         );
     }

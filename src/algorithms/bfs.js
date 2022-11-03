@@ -10,24 +10,18 @@ export function bfs(grid, startNode, endNode) { // why no imports? why export?
         const curr = toVisit.shift();
         if (curr.isWall || curr.isVisited) continue;
 
+        if (curr === endNode) return visitOrder;
         curr.isVisited = true;
         visitOrder.push(curr);
 
         const { row, col } = curr;
-        console.log("curr: " + row + " " + col);
         for (let k = 0; k < 4; k++) {
             const nr = row + dr[k], nc = col + dc[k];
             if (nr < 0 || nr >= grid.length || nc < 0 || nc >= grid[nr].length) continue;
             const newNode = grid[nr][nc];
-            if (!newNode.isVisited) {
-                newNode.prevNode = curr;
-                toVisit.push(newNode);
-            }
-
+            newNode.prevNode = curr;
+            toVisit.push(newNode);
         }
     }
-
-
-    return visitOrder;
 }
 
