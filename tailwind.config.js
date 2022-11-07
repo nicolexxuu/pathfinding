@@ -32,11 +32,29 @@ module.exports = {
             transform: 'scale(1)',
             backgroundColor: 'rgba(0, 218, 69, 0.75)'
           },
+        },
+
+        pathAnimation: {
+          '0%': {
+            transform: 'scale(0.3)',
+            backgroundColor: 'rgb(255, 254, 106)',
+            borderRadius: '100%'
+          },
+
+          '50%': {
+            backgroundColor: 'rgb(255, 254, 106)'
+          },
+
+          '100%': {
+            transform: 'scale(1)',
+            backgroundColor: 'rgb(255, 254, 106)'
+          },
         }
       },
 
       animation: {
         'node-visited': 'visitedAnimation 1.5s ease-in-out forwards',
+        'node-path': 'pathAnimation 1.5s ease-out forwards',
       },
     },
     plugins: [],

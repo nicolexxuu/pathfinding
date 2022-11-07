@@ -19,6 +19,7 @@ export function dfs(grid, startNode, endNode) { // why no imports? why export?
             const nr = row + dr[k], nc = col + dc[k];
             if (nr < 0 || nr >= grid.length || nc < 0 || nc >= grid[nr].length) continue;
             const newNode = grid[nr][nc];
+            if (newNode.isVisited) continue; // naming boolean attributes
             newNode.prevNode = curr;
             toVisit.push(newNode);
         }

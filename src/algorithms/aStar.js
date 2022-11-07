@@ -20,9 +20,9 @@ export function aStar(grid, startNode, endNode) {
             if (nr < 0 || nr >= grid.length || nc < 0 || nc >= grid[nr].length) continue;
             const newNode = grid[nr][nc];
             const newDist = curr.distance + 1 + Math.abs(row - endNode.row) + Math.abs(col - endNode.col);
-            if (newDist < newNode.distance) {
+            if (!newNode.isVisited && newDist < newNode.distance) {
                 newNode.distance = newDist;
-                newNode.prev = curr;
+                newNode.prevNode = curr;
             }
 
         }
