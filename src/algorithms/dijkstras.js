@@ -16,8 +16,8 @@ export function dijkstras(grid, startNode, endNode) {
             const nr = row + dr[k], nc = col + dc[k];
             if (nr < 0 || nr >= grid.length || nc < 0 || nc >= grid[nr].length) continue;
             const newNode = grid[nr][nc];
-            if (curr.distance + 1 < newNode.distance && !newNode.isVisited) {
-                newNode.distance = curr.distance + 1;
+            if (curr.distance + newNode.weight < newNode.distance && !newNode.isVisited) {
+                newNode.distance = curr.distance + newNode.weight;
                 newNode.prevNode = curr;
             }
 
