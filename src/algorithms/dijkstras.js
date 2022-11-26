@@ -7,7 +7,7 @@ export function dijkstras(grid, startNode, endNode) {
 
     for (let i = 0; i < grid.length * grid[0].length; i++) {
         const curr = findMinNode(grid);
-        if (!curr || curr === endNode) return visitOrder;
+        if (!curr || curr === endNode) break;
         curr.isVisited = true;
         visitOrder.push(curr);
         const { row, col } = curr;
@@ -23,6 +23,8 @@ export function dijkstras(grid, startNode, endNode) {
 
         }
     }
+
+    return visitOrder;
 }
 
 function findMinNode(grid) {

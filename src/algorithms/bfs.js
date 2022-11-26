@@ -9,11 +9,8 @@ export function bfs(grid, startNode, endNode) { // why no imports? why export?
     while (toVisit.length) {
         const curr = toVisit.shift();
         if (curr.isWall || curr.isVisited) continue;
+        if (curr === endNode) return visitOrder;
 
-        if (curr === endNode) {
-            console.log(visitOrder);
-            return visitOrder;
-        }
         curr.isVisited = true;
         visitOrder.push(curr);
 
@@ -23,9 +20,12 @@ export function bfs(grid, startNode, endNode) { // why no imports? why export?
             if (nr < 0 || nr >= grid.length || nc < 0 || nc >= grid[nr].length) continue;
             const newNode = grid[nr][nc];
             if (newNode.isVisited) continue;
+
             newNode.prevNode = curr;
             toVisit.push(newNode);
         }
     }
+
+    return visitOrder;
 }
 

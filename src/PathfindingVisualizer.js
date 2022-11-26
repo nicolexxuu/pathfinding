@@ -1,43 +1,81 @@
 import React, { Component, useRef } from 'react'; // why
-import Node from './Node';
+import Node from './Node'; // change pahs/names
+import AlgorithmMenu from './algorithmMenu';
 import { bfs } from './algorithms/bfs'; // why braces
 import { dfs } from './algorithms/dfs';
 import { dijkstras } from './algorithms/dijkstras';
 import { aStar } from './algorithms/aStar';
 
+const people = [
+    {
+        name: 'Breadth-First Search (BFS)',
+        id: 'bfs',
+    },
+    {
+        name: 'Depth-First Search (DFS)',
+        id: 'dfs',
+    },
+    {
+        name: 'Dijkstra\'s Algorithm',
+        id: 'dijkstras',
+    },
+    {
+        name: 'A* Algorithm',
+        id: 'a-star',
+    }
+]
+
+{/* <button
+                        onClick={() => this.visualize('bfs')}
+                        className=" bg-violet-300 px-2 py-1 rounded">
+                        Breadth-First Search (BFS)
+                    </button>
+                    <button
+                        onClick={() => this.visualize('dfs')}
+                        className=" bg-violet-300 px-2 py-1 rounded">
+                        Depth-First Search (DFS)
+                    </button>
+                    <button
+                        onClick={() => this.visualize('dijkstras')}
+                        className=" bg-violet-300 px-2 py-1 rounded">
+                        Dijkstra's Algorithm
+                    </button>
+                    <button
+                        onClick={() => this.visualize('a-star')}
+                        className=" bg-violet-300 px-2 py-1 rounded">
+                        A* Algorithm
+                    </button> */}
 
 export default class PathfindingVisualizer extends Component {
-
-    // const [timeoutId, setTimeoueId] = useState(null);
     constructor() {
         super();
 
         this.timeouts = [];
         this.state = {
             grid: [],
-            START_NODE_ROW: 5,
-            START_NODE_COL: 5,
-            END_NODE_ROW: 10,
-            END_NODE_COL: 4,
-            ROW_COUNT: 20,
-            COL_COUNT: 30,
-            mousePressed: false, //??
+            START_NODE_ROW: 12,
+            START_NODE_COL: 18,
+            END_NODE_ROW: 12,
+            END_NODE_COL: 41,
+            ROW_COUNT: 25,
+            COL_COUNT: 60,
+            mousePressed: false,
             startPressed: false,
             endPressed: false,
             wallPressed: false,
             isRunning: false,
+            selected: people[0],
+            animateDelay: 10,
         }
 
         this.handleMouseDown = this.handleMouseDown.bind(this); // https://reactjs.org/docs/handling-events.html
-        // this.clearPaths = this.clearPaths.bind(this);
-        // this.animatePath = this.animatePath.bind(this);
-        // this.animateSearch = this.animateSearch.bind(this);
+        // is this necessary?
 
         // this.handleMouseLeave = this.handleMouseLeave.bind(this);
         // this.toggleIsRunning = this.toggleIsRunning.bind(this); //??????
     }
 
-    componentDidMount() { // what is this for?
+    componentDidMount() {
         this.setState({ grid: this.getInitialGrid() });
     }
 
@@ -73,6 +111,7 @@ export default class PathfindingVisualizer extends Component {
             isWall: false,
             prevNode: null,
             weight: 1,
+
             //isNode: true
         };
     }
@@ -91,7 +130,7 @@ export default class PathfindingVisualizer extends Component {
             this.setState({
                 startPressed: true,
             })
-        } else if (this.state.grid[row][col].isEnd) { // why dont they do this
+        } else if (this.state.grid[row][col].isEnd) {
             this.setState({
                 endPressed: true,
             })
@@ -136,24 +175,38 @@ export default class PathfindingVisualizer extends Component {
     }
 
     randomizeWalls() {
-        this.terminate();
-
         this.clearPath();
         this.clearWalls();
         const newGrid = this.state.grid.slice();
-        const numCells = this.state.ROW_COUNT * this.state.COL_COUNT;
-        for (let i = 0; i < numCells * 2 / 3; i++) {
-            const k = (Math.random() * numCells) | 0;
+
+        const emptyCells = [];
+        for (let r = 0; r < this.state.ROW_COUNT; r++) {
+            for (let c = 0; c < this.state.COL_COUNT; c++) {
+                if (!newGrid[r][c].isStart && !newGrid[r][c].isEnd) emptyCells.push(r * this.state.COL_COUNT + c);
+            }
+        }
+        for (let i = 0; i < this.state.ROW_COUNT * this.state.COL_COUNT / 4; i++) {
+            const k = emptyCells.splice((Math.random() * emptyCells.length) | 0, 1);
             const r = k / this.state.COL_COUNT | 0, c = k % this.state.COL_COUNT | 0;
-            if (newGrid[r][c].isStart || newGrid[r][c].isEnd) continue;
             newGrid[r][c].isWall = true;
         }
-        this.setState({ grid: newGrid });
+        this.setState({ grid: newGrid }); // why's this faster
+    }
+
+    randomizeWeights() {
+        const newGrid = this.state.grid.slice();
+
+        for (let r = 0; r < this.state.ROW_COUNT; r++) {
+            for (let c = 0; c < this.state.COL_COUNT; c++) {
+                newGrid[r][c].weight = (Math.random() * 10) | 0 + 1;
+            }
+        }
+
+        this.setState({ grid: newGrid }); // why's this faster
     }
 
     /**** reset grid ****/
     clearPath = () => { // update state
-        //whys there more walls the first time
         this.terminate();
         const newGrid = this.state.grid.slice();
         for (const r of newGrid) {
@@ -168,7 +221,7 @@ export default class PathfindingVisualizer extends Component {
             }
         }
 
-        this.setState({ grid: newGrid }); ///???
+        // this.setState({ grid: newGrid }); ///???
     }
 
     clearWalls() {
@@ -177,15 +230,13 @@ export default class PathfindingVisualizer extends Component {
         const newGrid = this.state.grid.slice();
         for (const r of newGrid) {
             for (const n of r) {
-                const node = document.getElementById(`node-${n.row}-${n.col}`);
-                node.classList.remove('node-wall', 'bg-slate-300');
                 n.isVisited = false;
                 n.isWall = false;
                 n.distance = Infinity;
                 n.prevNode = null;
             }
         }
-        this.setState({ grid: newGrid });
+        this.setState({ grid: newGrid }); // why is this fa ster???
     }
 
     terminate() {
@@ -194,6 +245,10 @@ export default class PathfindingVisualizer extends Component {
             this.timeouts = [];
             this.setState({ isRunning: false });
         }
+    }
+
+    setSelected = (newSelected) => {// what if var name was selcted
+        this.setState({ selected: newSelected });
     }
 
     /**** animate algorithms ****/
@@ -236,12 +291,12 @@ export default class PathfindingVisualizer extends Component {
                 const node = document.getElementById(`node-${r}-${c}`);
                 if (!this.state.grid[r][c].isStart)
                     node.classList.add('animate-node-visited');
-            }, i * 10));
+            }, i * this.state.animateDelay));
         }
 
         this.timeouts.push(setTimeout(() => { // this??
             this.animatePath(shortestPath);
-        }, orderVisited.length * 10));
+        }, orderVisited.length * this.state.animateDelay));
     }
 
     animatePath = (shortestPath) => {
@@ -253,7 +308,6 @@ export default class PathfindingVisualizer extends Component {
                     node.classList.add('animate-node-visited', 'animate-node-path');
             }, i * 50));
         }
-        // console.log('length of shortest path: ' + shortestPath.length);
 
         setTimeout(() => {
             this.toggleIsRunning();
@@ -262,21 +316,25 @@ export default class PathfindingVisualizer extends Component {
 
     render() {
         const { grid } = this.state;
-        // why do i need this,
+
         return (
-            <div className="mt-3">
+            <div className="mt-3"
+                onMouseUp={() =>
+                    this.setState({ mousePressed: false, startPressed: false, endPressed: false, wallPressed: false })
+                }>
+
                 <h1 className="text-center font-semibold text-3xl">
                     pathfinding algorithm visualizer
                 </h1>
-                <table className="mx-auto my-7"
-                    onMouseLeave={() => this.setState({ mousePressed: false, startPressed: false, endPressed: false, wallPressed: false })}
+                <table className="mx-auto my-7 select-none"
+                // onMouseLeave={() => this.setState({ mousePressed: false, startPressed: false, endPressed: false, wallPressed: false })}
                 >
                     <tbody>
                         {grid.map((row, rowIdx) => {
                             return (
                                 <tr key={rowIdx}>
                                     {row.map((node, nodeIdx) => {
-                                        const { row, col, isStart, isEnd, isWall } = node;
+                                        const { row, col, isStart, isEnd, isWall, weight } = node;
                                         return (
                                             <Node
                                                 key={nodeIdx}
@@ -291,9 +349,7 @@ export default class PathfindingVisualizer extends Component {
                                                 onMouseEnter={(row, col) =>
                                                     this.handleMouseEnter(row, col)
                                                 }
-                                                onMouseUp={() =>
-                                                    this.setState({ mousePressed: false, startPressed: false, endPressed: false, wallPressed: false })
-                                                }
+                                                weight={weight}
                                             >
                                             </Node>
                                         );
@@ -304,26 +360,13 @@ export default class PathfindingVisualizer extends Component {
                     </tbody>
                 </table>
                 <div className="space-x-3">
+                    <AlgorithmMenu people={people} onChange={this.setSelected} value={this.state.selected} />
                     <button
-                        onClick={() => this.visualize('bfs')}
+                        onClick={() => this.visualize(this.state.selected.id)}
                         className=" bg-violet-300 px-2 py-1 rounded">
-                        Breadth-First Search (BFS)
+                        visualize!
                     </button>
-                    <button
-                        onClick={() => this.visualize('dfs')}
-                        className=" bg-violet-300 px-2 py-1 rounded">
-                        Depth-First Search (DFS)
-                    </button>
-                    <button
-                        onClick={() => this.visualize('dijkstras')}
-                        className=" bg-violet-300 px-2 py-1 rounded">
-                        Dijkstra's Algorithm
-                    </button>
-                    <button
-                        onClick={() => this.visualize('a-star')}
-                        className=" bg-violet-300 px-2 py-1 rounded">
-                        A* Algorithm
-                    </button>
+
                     <button
                         onClick={() => this.clearPath()}
                         className=" bg-violet-300 px-2 py-1 rounded">
@@ -335,13 +378,23 @@ export default class PathfindingVisualizer extends Component {
                         random walls
                     </button>
                     <button
+                        onClick={() => this.randomizeWeights()}
+                        className=" bg-violet-300 px-2 py-1 rounded">
+                        random weights
+                    </button>
+                    <button
                         onClick={() => this.clearWalls()}
                         className=" bg-violet-300 px-2 py-1 rounded">
                         clear walls
                     </button>
+                    <button
+                        onClick={() => this.setState({ animateDelay: this.state.animateDelay === 10 ? 50 : 10 })}
+                        className=" bg-violet-300 px-2 py-1 rounded">
+                        toggle speed
+                    </button>
                 </div>
                 <footer className="text-center mt-2">
-                    hosted on <a href="https://github.com/nicolexxuu/pathfinding" target="_blank" className="text-violet-400 font-bold">GitHub</a>
+                    hosted on <a href="https://github.com/nicolexxuu/pathfinding" target="_blank" rel="noreferrer" className="text-violet-400 font-bold">GitHub</a>
                 </footer>
             </div>
         )
@@ -359,3 +412,9 @@ function getShortestPath(endNode) {
 
     return shortestPath;
 }
+
+// make responsive
+// pause
+// change speeds
+
+// num run deploy
