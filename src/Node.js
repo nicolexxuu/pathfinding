@@ -19,7 +19,7 @@ export default class Node extends Component { // functional class?
         return (
             <td
                 id={`node-${row}-${col}`}
-                className={`${isStart ? 'node-start bg-green-300' : isEnd ? 'node-end bg-red-300' : isWall ? 'node-wall bg-slate-300' : ''} w-6 h-6 border border-black font-xs text-gray-500 p-0`}
+                className={`${isStart ? 'node-start bg-green-400' : isEnd ? 'node-end bg-red-400' : isWall ? 'node-wall bg-violet-400' : ''} w-6 h-6 border border-gray-300 font-xs text-violet-400 p-0`}
                 onMouseDown={event => onMouseDown(event, row, col)}
                 onAuxClick={event => onAuxClick(event, row, col)}
                 onMouseEnter={() => onMouseEnter(row, col)}

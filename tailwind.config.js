@@ -15,39 +15,39 @@ module.exports = {
         visitedAnimation: {
           '0%': {
             transform: 'scale(0.3)',
-            backgroundColor: 'rgba(0, 0, 66, 0.75)',
+            backgroundColor: '#60a5fa',
             borderRadius: '100%'
           },
 
           '50%': {
-            backgroundColor: 'rgba(217, 17, 187, 0.75)'
+            backgroundColor: '#f9a8d4'
           },
 
           '75%': {
             transform: 'scale(1.2)',
-            backgroundColor: 'rgba(34, 17, 217, 0.75)'
+            backgroundColor: '#a5b4fc'
           },
 
           '100%': {
             transform: 'scale(1)',
-            backgroundColor: 'rgba(0, 218, 69, 0.75)'
+            backgroundColor: '#bbf7d0'
           },
         },
 
         pathAnimation: {
           '0%': {
             transform: 'scale(0.3)',
-            backgroundColor: 'rgb(255, 254, 106)',
+            backgroundColor: '#fef08a',
             borderRadius: '100%'
           },
 
           '50%': {
-            backgroundColor: 'rgb(255, 254, 106)'
+            backgroundColor: '#fef08a'
           },
 
           '100%': {
             transform: 'scale(1)',
-            backgroundColor: 'rgb(255, 254, 106)'
+            backgroundColor: '#fef08a'
           },
         }
       },
